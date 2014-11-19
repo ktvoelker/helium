@@ -1,5 +1,5 @@
 
-name:           helium
+name:           hydrogen-lang
 version:        0.0.0.1
 cabal-version:  >= 1.10
 build-type:     Simple
@@ -7,12 +7,12 @@ license:        GPL-3
 license-file:   LICENSE.txt
 copyright:      (c) 2014 Karl Voelker
 author:         Karl Voelker
-maintainer:     helium@karlv.net
+maintainer:     hydrogen-lang@karlv.net
 stability:      experimental
-bug-reports:    mailto:helium@karlv.net
+bug-reports:    mailto:hydrogen-lang@karlv.net
 synopsis:       A language toolkit
 category:       Language
-tested-with:    GHC == 7.6.3
+tested-with:    GHC == 7.8.3
 
 Library
   default-language: Haskell2010
@@ -24,20 +24,20 @@ Library
     -fno-warn-missing-signatures
     -fno-warn-orphans
   build-depends:
-    base                 >= 4    && < 5,
-    containers           >= 0.4  && < 0.6,
-    text                 >= 0.11 && < 0.12,
-    mtl                  >= 2.1  && < 2.2,
-    comonad-transformers >= 3.0  && < 3.1,
-    data-lens            >= 2.10 && < 2.11,
-    data-lens-fd         >= 2.0  && < 2.1,
-    data-lens-template   >= 2.1  && < 2.2,
-    template-haskell     >= 2.7  && < 2.9,
-    pretty               >= 1.1  && < 1.2,
-    conduit              >= 1.0  && < 1.1,
-    system-filepath      >= 0.4  && < 0.5,
-    bytestring           >= 0.10 && < 0.11,
-    regex-applicative    >= 0.3  && < 0.4,
+    base >= 4 && < 5,
+    containers,
+    text,
+    mtl,
+    comonad-transformers,
+    data-lens,
+    data-lens-fd,
+    data-lens-template,
+    template-haskell,
+    pretty,
+    conduit,
+    system-filepath,
+    bytestring,
+    regex-applicative,
     applicative-parsec,
     hydrogen
   exposed-modules:
