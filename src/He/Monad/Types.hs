@@ -1,7 +1,8 @@
 
 module He.Monad.Types where
 
-import H.Common
+import H.IO
+import H.Prelude
 
 import He.Monad.State
 

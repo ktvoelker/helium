@@ -11,8 +11,11 @@ import qualified Data.Set as S
 import qualified Data.Text as T
 import Text.Regex.Applicative
 
-import H.Common
+import H.Prelude
 import He.Lexer.Types
+
+unsafeReadChars :: (Read a) => [Char] -> a
+unsafeReadChars = maybe (error "He.Lexer.Tokens.unsafeReadChars") id . read . pack
 
 text :: Text -> Parser Text
 text xs = string (T.unpack xs) *> pure xs
@@ -22,11 +25,11 @@ keywords =
   keepMode
   . fmap ((,NoData) . Keyword)
   . choice
-  . map text
+  . fmap text
   . sKeywords
 
 ident :: (IdClass a) => TokenParser a
-ident = keepMode . choice . map oneIdent . sIdentifiers
+ident = keepMode . choice . fmap oneIdent . sIdentifiers
 
 oneIdent :: (IdClass a) => (a, Set Char, Set Char) -> Parser (RawToken a)
 oneIdent (cls, head, tail) =
@@ -44,7 +47,7 @@ litInt :: TokenParser a
 litInt LexerSpec{ sInts = False } = empty
 litInt spec@LexerSpec{ sInts = True } = keepMode $ f <$> sign spec <*> many1 digit
   where
-    f signFunc = (LitInt,) . IntData . signFunc . read
+    f signFunc = (LitInt,) . IntData . signFunc . unsafeReadChars
 
 litFloat :: TokenParser a
 litFloat LexerSpec{ sFloats = False } = empty
@@ -56,16 +59,16 @@ litFloat spec@LexerSpec{ sFloats = True } =
       . FloatData
       $ (fromInteger intVal + fracVal) * (10 ^ maybe 0 id exp)
       where
-        intVal = mainSignFunc . read $ intPart :: Integer
-        fracVal = (read fracPart :: Integer) % (10 ^ length fracPart)
-    g expSignFunc digs = expSignFunc . read $ digs :: Integer
+        intVal = mainSignFunc . unsafeReadChars $ intPart :: Integer
+        fracVal = (unsafeReadChars fracPart :: Integer) % (10 ^ length fracPart)
+    g expSignFunc digs = expSignFunc . unsafeReadChars $ digs :: Integer
     g' = optionMaybe $ g <$> (oneOf "eE" *> sign spec) <*> many1 digit
     withIntPart = (,) <$> many1 digit <*> (char '.' *> many digit)
     withoutIntPart = ("0",) <$> (char '.' *> many1 digit)
 
 escapeCodes :: [Parser Char]
 escapeCodes =
-  map (\(e, r) -> (char e :: Parser Char) *> pure r)
+  fmap (\(e, r) -> (char e :: Parser Char) *> pure r)
     [ ('b', '\b'), ('t', '\t'), ('n', '\n'), ('f', '\f'), ('r', '\r') ]
 
 charContent :: [Char] -> Parser Char
@@ -77,9 +80,12 @@ charContent specials = (char '\\' *> escape) <|> normal
       chr $ (readDigit a * 8 ^ (2 :: Integer)) + (readDigit b * 8) + readDigit c
     f _ _ = undefined
     unicode =
-      chr . read . ("0x" ++) <$> ((char 'u' :: Parser Char) *> count 4 hexDigit)
+      chr
+      . unsafeReadChars
+      . ("0x" <>)
+      <$> ((char 'u' :: Parser Char) *> count 4 hexDigit)
     normal = noneOf $ '\\' : specials
-    readDigit = read . (: [])
+    readDigit = unsafeReadChars . (: [])
 
 litChar :: TokenParser a
 litChar LexerSpec{ sStrings = StringSpec{ sCharDelim = Nothing } } = empty

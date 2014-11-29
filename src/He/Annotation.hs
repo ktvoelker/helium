@@ -6,7 +6,7 @@ module He.Annotation
   ) where
 
 import Control.Comonad.Trans.Store
-import H.Common
+import H.Prelude
 import Language.Haskell.TH
 import Text.Parsec.Applicative.Types
 
@@ -23,7 +23,7 @@ class Annotated a where
 annotate :: Q [Dec] -> Q [Dec]
 annotate = annotateWhen $ const True
 
-annotateExcept :: [String] -> Q [Dec] -> Q [Dec]
+annotateExcept :: [[Char]] -> Q [Dec] -> Q [Dec]
 annotateExcept names = annotateWhen $ \dec -> case dec of
   DataD _ name _ _ _ -> not $ nameBase name `elem` names
   NewtypeD _ name _ _ _ -> not $ nameBase name `elem` names
@@ -36,7 +36,7 @@ annotate1 :: (Dec -> Bool) -> Dec -> Q [Dec]
 annotate1 pred decl | not $ pred decl = return [decl]
 annotate1 _ (DataD cxt name tvs cons dvs) = do
     cons'  <- mapM annotateCon cons
-    let smarts = catMaybes $ map (fmap mkSmartCon . conName) cons
+    let smarts = catMaybes $ fmap (fmap mkSmartCon . conName) cons
     inst   <- mkAnnInst name (length tvs) cons
     return $ inst : DataD cxt name tvs cons' dvs : smarts
 annotate1 _ (NewtypeD cxt name tvs con dvs) = do
@@ -55,7 +55,7 @@ annotateCon (ForallC tvs cxt con) = ForallC tvs cxt <$> annotateCon con
 
 mkSmartCon :: Name -> Dec
 mkSmartCon name =
-  ValD (VarP . mkName $ "mk" ++ nameBase name)
+  ValD (VarP . mkName $ "mk" <> nameBase name)
     (NormalB $ AppE (ConE name) $ VarE 'emptyAnn) []
 
 conName :: Con -> Maybe Name
@@ -68,7 +68,7 @@ mkAnnInst :: Name -> Int -> [Con] -> Q Dec
 mkAnnInst name n cons = do
   body <- mkRunLensBody cons
   ts   <- mapM (const $ newName "t") [1 .. n]
-  let name' = foldl AppT (ConT name) $ map VarT ts
+  let name' = foldl AppT (ConT name) $ fmap VarT ts
   return $ InstanceD [] (AppT (ConT ''Annotated) name')
     [ ValD (VarP $ mkName "annotationLens") (NormalB $ AppE (ConE 'Lens) body) [] ]
 
@@ -93,11 +93,11 @@ mkRunLensMatch' name n = do
   { updater =
       LamE [VarP newAnnName]
       $ foldl AppE (ConE name)
-      $ map VarE
+      $ fmap VarE
       $ newAnnName : otherNames
   }
   return
-    $ Match (ConP name $ map VarP $ oldAnnName : otherNames)
+    $ Match (ConP name $ fmap VarP $ oldAnnName : otherNames)
       ( NormalB
       $ AppE (AppE (ConE 'StoreT) (AppE (ConE 'Identity) updater))
       $ VarE oldAnnName

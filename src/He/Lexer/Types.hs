@@ -3,8 +3,10 @@
 module He.Lexer.Types where
 
 import Data.Lens.Template
-import H.Common
+import qualified Data.List as L
+import H.Prelude
 import qualified Data.Text as T
+import Prelude (Show(..))
 import Text.Parsec.Applicative.Types
 import Text.Regex.Applicative
 
@@ -16,7 +18,7 @@ choice :: [Parser a] -> Parser a
 choice = foldr (<|>) empty
 
 oneOf :: [Char] -> Parser Char
-oneOf = choice . map sym
+oneOf = choice . fmap sym
 
 noneOf :: [Char] -> Parser Char
 noneOf ps = psym $ not . (`elem` ps)
@@ -31,13 +33,13 @@ many1 :: Parser a -> Parser [a]
 many1 p = (:) <$> p <*> many p
 
 count :: Int -> Parser a -> Parser [a]
-count n = sequenceA . replicate n
+count n = sequenceA . L.replicate n
 
 digit :: Parser Char
 digit = oneOf ['0' .. '9']
 
 hexDigit :: Parser Char
-hexDigit = oneOf $ ['0' .. '9'] ++ ['a' .. 'f'] ++ ['A' .. 'F']
+hexDigit = oneOf $ ['0' .. '9'] <> ['a' .. 'f'] <> ['A' .. 'F']
 
 spaces :: Parser ()
 spaces = many (psym isSpace) *> pure ()
@@ -70,20 +72,20 @@ data TokenType a =
 
 instance (Show a) => Show (TokenType a) where
   showsPrec p = \case
-    Keyword xs     -> ("'" ++) . (T.unpack xs ++) . ("'" ++)
-    Identifier a   -> ("ID[" ++) . showsPrec p a . ("]" ++)
-    LitChar        -> ("CHAR" ++)
-    LitInt         -> ("INT" ++)
-    LitFloat       -> ("FLOAT" ++)
-    LitBool        -> ("BOOL" ++)
-    BeginString    -> ("BEGIN-STR" ++)
-    StringContent  -> ("STRING-CONTENT" ++)
-    EndString      -> ("END-STR" ++)
-    BeginInterp    -> ("BEGIN-INTERP" ++)
-    EndInterp      -> ("END-INTERP" ++)
-    BeginComment   -> ("BEGIN-COMMENT" ++)
-    CommentContent -> ("COMMENT-CONTENT" ++)
-    EndComment     -> ("END-COMMENT" ++)
+    Keyword xs     -> ("'" <>) . (T.unpack xs <>) . ("'" <>)
+    Identifier a   -> ("ID[" <>) . showsPrec p a . ("]" <>)
+    LitChar        -> ("CHAR" <>)
+    LitInt         -> ("INT" <>)
+    LitFloat       -> ("FLOAT" <>)
+    LitBool        -> ("BOOL" <>)
+    BeginString    -> ("BEGIN-STR" <>)
+    StringContent  -> ("STRING-CONTENT" <>)
+    EndString      -> ("END-STR" <>)
+    BeginInterp    -> ("BEGIN-INTERP" <>)
+    EndInterp      -> ("END-INTERP" <>)
+    BeginComment   -> ("BEGIN-COMMENT" <>)
+    CommentContent -> ("COMMENT-CONTENT" <>)
+    EndComment     -> ("END-COMMENT" <>)
 
 data TokenData =
     NoData
@@ -157,7 +159,7 @@ data TokenizerState =
   TokenizerState
   { _tsModeStack :: [LexerMode]
   , _tsSourcePos :: SourcePos
-  , _tsInput     :: String
+  , _tsInput     :: [Char]
   } deriving (Show)
 
 emptyTokenizerState :: Text -> Text -> TokenizerState

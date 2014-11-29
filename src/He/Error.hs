@@ -1,7 +1,7 @@
 
 module He.Error where
 
-import H.Common
+import H.Prelude
 import Text.Parsec.Applicative.Types
 
 data ErrType e =
@@ -12,7 +12,7 @@ data Err e =
   Err
   { errType      :: ErrType e
   , errSourcePos :: Maybe SourcePos
-  , errName      :: Maybe String
-  , errMore      :: Maybe String
+  , errName      :: Maybe Text
+  , errMore      :: Maybe Text
   } deriving (Show)
 

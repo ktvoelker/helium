@@ -28,7 +28,7 @@ Library
     containers,
     text,
     mtl,
-    comonad-transformers,
+    comonad,
     data-lens,
     data-lens-fd,
     data-lens-template,

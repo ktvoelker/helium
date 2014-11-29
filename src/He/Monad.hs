@@ -26,7 +26,8 @@ module He.Monad
   ) where
 
 import Control.Exception
-import H.Common
+import H.IO
+import H.Prelude
 import Data.Typeable
 
 import He.Error
@@ -43,7 +44,7 @@ getErrorCount = liftMT . MT $ gets _mtErrorCount
 
 abort :: (MonadM m) => m a
 abort = do
-  getErrorCount >>= \c -> log $ "Aborted with " <> showText c <> " errors"
+  getErrorCount >>= \c -> log $ "Aborted with " <> show c <> " errors"
   liftIO $ throwIO Abort
 
 incrErrorCount :: (MonadM m) => m ()
@@ -56,7 +57,7 @@ fatal' :: (MonadM m) => Err () -> m a
 fatal' = fatal
 
 report :: (MonadM m, Show e) => Err e -> m ()
-report e = incrErrorCount >> log (showText e)
+report e = incrErrorCount >> log (show e)
 
 report' :: (MonadM m) => Err () -> m ()
 report' = report

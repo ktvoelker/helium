@@ -4,7 +4,8 @@ module He.Monad.State where
 
 import Data.Lens.Template
 import qualified Data.Text.IO as TIO
-import H.Common
+import H.IO
+import H.Prelude
 
 newtype PrimId = PrimId { primName :: Text } deriving (Eq, Ord, Show)
 

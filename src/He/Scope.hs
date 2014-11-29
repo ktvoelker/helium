@@ -1,8 +1,9 @@
 
 module He.Scope where
 
+import qualified Data.List as L
 import qualified Data.Map as M
-import H.Common
+import H.Prelude
 
 import He.Monad
 
@@ -27,5 +28,5 @@ scope bs m = do
     f (k, v) = liftM (k, ) v
 
 scope' :: (MonadReader (Map k v) m, Ord k) => (k -> m v) -> [k] -> m a -> m a
-scope' f ks = scope . zip ks . map f $ ks
+scope' f ks = scope . L.zip ks . fmap f $ ks
 

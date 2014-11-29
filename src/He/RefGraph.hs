@@ -25,7 +25,7 @@ import Data.Lens.Template
 import qualified Data.Map as M
 import qualified Data.Set as S
 
-import H.Common hiding (filter)
+import H.Prelude hiding (filter)
 
 newtype RefGraph a = RefGraph { _rgMap :: Map a (Set a) } deriving (Eq, Ord, Show)
 
@@ -50,7 +50,7 @@ toGraph = fst3 . graphFromEdges . toEdgeList
 
 toEdgeList :: (Ord a) => RefGraph a -> EdgeList a
 toEdgeList =
-  map (\(k, xs) -> (k, k, S.toList xs))
+  fmap (\(k, xs) -> (k, k, S.toList xs))
   . M.toList
   . (rgMap ^$)
 

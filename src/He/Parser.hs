@@ -2,7 +2,7 @@
 module He.Parser where
 
 import qualified Data.Map as M
-import H.Common
+import H.Prelude
 import Text.Parsec.Applicative hiding (Parser, parse)
 import qualified Text.Parsec.Applicative as P
 
@@ -54,7 +54,7 @@ identifier :: (IdClass a) => a -> Parser s a Text
 identifier = (textData . tokenData <$>) . token . Identifier
 
 anyIdentifier :: (IdClass a) => Parser s a (a, Text)
-anyIdentifier = fmap f . choice $ map (token . Identifier) [minBound .. maxBound]
+anyIdentifier = fmap f . choice $ fmap (token . Identifier) [minBound .. maxBound]
   where
     f (Identifier cls, (wspValue ^$) -> TextData name) = (cls, name)
     f _ = undefined

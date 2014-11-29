@@ -3,7 +3,7 @@
 module He.Annotation.Internal where
 
 import Data.Lens.Template
-import H.Common
+import H.Prelude
 import Text.Parsec.Applicative.Types
 
 data Ann =

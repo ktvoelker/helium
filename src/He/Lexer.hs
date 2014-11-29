@@ -17,9 +17,10 @@ module He.Lexer
   , tokenize
   ) where
 
+import qualified Data.List as L
 import qualified Data.Map as M
 import qualified Data.Set as S
-import H.Common
+import H.Prelude
 import Filesystem.Path.CurrentOS (encode)
 import Text.Parsec.Applicative hiding (Parser)
 import Text.Regex.Applicative
@@ -63,7 +64,7 @@ getCurMode :: TokT LexerMode
 getCurMode = curMode <$> access tsModeStack
 
 file :: (IdClass a) => LexerSpec a -> TokT (Tokens a)
-file spec = skip >> (sequenceWhileJust . repeat) (oneToken spec)
+file spec = skip >> (sequenceWhileJust . L.repeat) (oneToken spec)
 
 skip :: TokT ()
 skip = void $ getCurMode >>= withPos . skippable
