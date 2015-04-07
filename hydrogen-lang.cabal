@@ -1,11 +1,11 @@
 
 name:           hydrogen-lang
-version:        0.0.0.1
+version:        0.1.0.0
 cabal-version:  >= 1.10
 build-type:     Simple
 license:        GPL-3
 license-file:   LICENSE.txt
-copyright:      (c) 2014 Karl Voelker
+copyright:      (c) 2014-2015 Karl Voelker
 author:         Karl Voelker
 maintainer:     hydrogen-lang@karlv.net
 stability:      experimental
@@ -24,15 +24,15 @@ Library
     -fno-warn-missing-signatures
     -fno-warn-orphans
   build-depends:
-    base >= 4 && < 5,
-    containers,
-    text,
-    mtl,
-    lens,
-    system-filepath,
-    regex-applicative,
-    applicative-parsec,
-    hydrogen >= 0.3.0.0
+    base               >= 4   && < 5,
+    containers         >= 0.5 && < 0.6,
+    text               >= 1.2 && < 1.3,
+    mtl                >= 2.2 && < 2.3,
+    lens               >= 4.9 && < 4.10,
+    system-filepath    >= 0.4 && < 0.5,
+    regex-applicative  >= 0.3 && < 0.4,
+    applicative-parsec >= 0.1 && < 0.2,
+    hydrogen           >= 0.3 && < 0.4
   exposed-modules:
     He.Error
     He.Lexer
