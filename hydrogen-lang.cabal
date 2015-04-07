@@ -12,7 +12,7 @@ stability:      experimental
 bug-reports:    mailto:hydrogen-lang@karlv.net
 synopsis:       A language toolkit
 category:       Language
-tested-with:    GHC == 7.8.3
+tested-with:    GHC == 7.10.1
 
 Library
   default-language: Haskell2010
@@ -28,28 +28,18 @@ Library
     containers,
     text,
     mtl,
-    comonad,
-    data-lens,
-    data-lens-fd,
-    data-lens-template,
-    template-haskell,
-    pretty,
-    conduit,
+    lens,
     system-filepath,
-    bytestring,
     regex-applicative,
     applicative-parsec,
-    hydrogen
+    hydrogen >= 0.3.0.0
   exposed-modules:
-    He.Annotation
     He.Error
     He.Lexer
     He.Parser
     He.RefGraph
     He.Scope
   other-modules:
-    He.Annotation.Demo
-    He.Annotation.Internal
     He.Lexer.Tokens
     He.Lexer.Types
     He.Monad

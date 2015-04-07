@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module He.Monad.State where
 
-import Data.Lens.Template
+import Control.Lens
 import qualified Data.Text.IO as TIO
 import H.IO
 import H.Prelude
@@ -56,5 +56,5 @@ emptyMTState = MTState 0 0 logStdErr
 logStdErr :: Text -> IO ()
 logStdErr = TIO.putStrLn
 
-makeLenses [''MTState]
+makeLenses ''MTState
 

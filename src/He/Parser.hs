@@ -1,25 +1,23 @@
 
 module He.Parser where
 
+import Control.Lens
 import qualified Data.Map as M
+import Filesystem.Path.CurrentOS hiding (empty, null)
 import H.Prelude
 import Text.Parsec.Applicative hiding (Parser, parse)
 import qualified Text.Parsec.Applicative as P
 
-import He.Annotation
 import He.Lexer (TokenType(..), TokenData(..), IdClass(), Tokens, tokenData)
 import He.Monad
 
 type Parser s a = P.Parser s (TokenType a) (WithSourcePos TokenData)
 
-instance SourcePosEffect (Parser s a) where
-  getSourcePos = getPosition
-
 parse
   :: (Eq a)
   => Parser s a b
-  -> FileMap (Tokens a)
-  -> MT (FileMap b)
+  -> M.Map FilePath (Tokens a)
+  -> MT (M.Map FilePath b)
 parse = (sequence .) . (M.mapWithKey . parseFile)
 
 parseFile
@@ -56,13 +54,13 @@ identifier = (textData . tokenData <$>) . token . Identifier
 anyIdentifier :: (IdClass a) => Parser s a (a, Text)
 anyIdentifier = fmap f . choice $ fmap (token . Identifier) [minBound .. maxBound]
   where
-    f (Identifier cls, (wspValue ^$) -> TextData name) = (cls, name)
+    f (Identifier cls, (^. wspValue) -> TextData name) = (cls, name)
     f _ = undefined
 
 tok :: (Eq a) => TokenType a -> Parser s a ()
 tok = (f <$>) . token
   where
-    f (_, (wspValue ^$) -> NoData) = ()
+    f (_, (^. wspValue) -> NoData) = ()
     f _ = undefined
 
 beginString :: (IdClass a) => Parser s a ()

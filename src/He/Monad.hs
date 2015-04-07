@@ -26,6 +26,7 @@ module He.Monad
   ) where
 
 import Control.Exception
+import Control.Lens
 import H.IO
 import H.Prelude
 import Data.Typeable

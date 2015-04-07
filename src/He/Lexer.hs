@@ -17,11 +17,12 @@ module He.Lexer
   , tokenize
   ) where
 
+import Control.Lens
 import qualified Data.List as L
 import qualified Data.Map as M
 import qualified Data.Set as S
 import H.Prelude
-import Filesystem.Path.CurrentOS (encode)
+import Filesystem.Path.CurrentOS hiding (empty, null)
 import Text.Parsec.Applicative hiding (Parser)
 import Text.Regex.Applicative
 
@@ -43,7 +44,7 @@ underscore = S.singleton '_'
 
 tokenize
   :: (IdClass a)
-  => LexerSpec a -> FileMap Text -> MT (FileMap (Tokens a))
+  => LexerSpec a -> M.Map FilePath Text -> MT (M.Map FilePath (Tokens a))
 tokenize = (sequence .) . (M.mapWithKey . tokenizeFile)
 
 tokenizeFile
@@ -51,17 +52,17 @@ tokenizeFile
    => LexerSpec a -> FilePath -> Text -> MT (Tokens a)
 tokenizeFile spec name xs = runStateT (file spec) i >>= \case
   (xs, ts)
-    | not . null $ tsInput ^$ ts
-      -> fatal' . Err ELexer Nothing Nothing . Just . show $ (tsSourcePos ^$ ts, xs)
-    | curMode (tsModeStack ^$ ts) /= LMNormal
-      -> fatal' . Err ELexer Nothing Nothing . Just . show $ (tsModeStack ^$ ts, xs)
+    | not . null $ ts ^. tsInput
+      -> fatal' . Err ELexer Nothing Nothing . Just . show $ (ts ^. tsSourcePos, xs)
+    | curMode (ts ^. tsModeStack) /= LMNormal
+      -> fatal' . Err ELexer Nothing Nothing . Just . show $ (ts ^. tsModeStack, xs)
     | otherwise
       -> return xs
   where
     i = emptyTokenizerState (encode name) xs
 
 getCurMode :: TokT LexerMode
-getCurMode = curMode <$> access tsModeStack
+getCurMode = curMode <$> use tsModeStack
 
 file :: (IdClass a) => LexerSpec a -> TokT (Tokens a)
 file spec = skip >> (sequenceWhileJust . L.repeat) (oneToken spec)
@@ -82,12 +83,12 @@ oneToken spec = do
 
 withPos :: Parser a -> TokT (Maybe (a, SourcePos))
 withPos p = do
-  pos <- access tsSourcePos
-  findLongestPrefix (withMatched p) <$> access tsInput >>= \case
+  pos <- use tsSourcePos
+  findLongestPrefix (withMatched p) <$> use tsInput >>= \case
     Nothing -> return Nothing
     Just ((val, matched), rest) -> do
-      void $ tsInput ~= rest
-      void $ tsSourcePos %= flip updatePosString matched
+      assign tsInput rest
+      tsSourcePos %= flip updatePosString matched
       return $ Just (val, pos)
 
 modeAction :: [LexerMode] -> LexerModeAction -> [LexerMode]

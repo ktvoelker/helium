@@ -20,8 +20,8 @@ module He.RefGraph
   , flattenSCCs
   ) where
 
+import Control.Lens
 import Data.Graph
-import Data.Lens.Template
 import qualified Data.Map as M
 import qualified Data.Set as S
 
@@ -29,21 +29,24 @@ import H.Prelude hiding (filter)
 
 newtype RefGraph a = RefGraph { _rgMap :: Map a (Set a) } deriving (Eq, Ord, Show)
 
-makeLenses [''RefGraph]
+makeLenses ''RefGraph
 
 type EdgeList a = [(a, a, [a])]
 
 emptyRefGraph :: (Ord a) => RefGraph a
 emptyRefGraph = RefGraph M.empty
 
-nodeLens :: (Ord a) => a -> Lens (RefGraph a) (Maybe (Set a))
-nodeLens node = mapLens node . rgMap
+mapLens :: (Ord k) => k -> Lens' (Map k a) (Maybe a)
+mapLens = todo
+
+nodeLens :: (Ord a) => a -> Lens' (RefGraph a) (Maybe (Set a))
+nodeLens node = rgMap . mapLens node
 
 addDef :: (Ord a) => a -> RefGraph a -> RefGraph a
-addDef node = nodeLens node ^%= (<> Just S.empty)
+addDef node = nodeLens node %~ (<> Just S.empty)
 
 addRef :: (Ord a) => a -> a -> RefGraph a -> RefGraph a
-addRef from to = (nodeLens from ^%= (S.insert to <$>)) . addDef from
+addRef from to = (nodeLens from %~ (S.insert to <$>)) . addDef from
 
 toGraph :: (Ord a) => RefGraph a -> Graph
 toGraph = fst3 . graphFromEdges . toEdgeList
@@ -52,7 +55,7 @@ toEdgeList :: (Ord a) => RefGraph a -> EdgeList a
 toEdgeList =
   fmap (\(k, xs) -> (k, k, S.toList xs))
   . M.toList
-  . (rgMap ^$)
+  . (^. rgMap)
 
 sccs :: (Ord a) => RefGraph a -> [SCC a]
 sccs = stronglyConnComp . toEdgeList

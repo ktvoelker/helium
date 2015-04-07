@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module He.Lexer.Types where
 
-import Data.Lens.Template
+import Control.Lens
 import qualified Data.List as L
 import H.Prelude
 import qualified Data.Text as T
@@ -99,7 +99,7 @@ data TokenData =
 type Token a = (TokenType a, WithSourcePos TokenData)
 
 tokenData :: Token a -> TokenData
-tokenData = (wspValue ^$) . snd
+tokenData = (^. wspValue) . snd
 
 type RawToken a = (TokenType a, TokenData)
 
@@ -166,7 +166,7 @@ emptyTokenizerState :: Text -> Text -> TokenizerState
 emptyTokenizerState name =
   TokenizerState emptyModeStack (initialPos $ Just name) . T.unpack
 
-makeLenses [''TokenizerState]
+makeLenses ''TokenizerState
 
 type TokT = StateT TokenizerState MT
 
