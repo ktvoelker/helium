@@ -2,7 +2,6 @@
 module He.Parser where
 
 import Control.Lens
-import qualified Data.Map as M
 import Filesystem.Path.CurrentOS hiding (empty, null)
 import H.Prelude
 import Text.Parsec.Applicative hiding (Parser, parse)
@@ -16,17 +15,10 @@ type Parser s a = P.Parser s (TokenType a) (WithSourcePos TokenData)
 parse
   :: (Eq a)
   => Parser s a b
-  -> M.Map FilePath (Tokens a)
-  -> MT (M.Map FilePath b)
-parse = (sequence .) . (M.mapWithKey . parseFile)
-
-parseFile
-  :: (Eq a)
-  => Parser s a b
   -> FilePath
   -> Tokens a
   -> MT b
-parseFile file _ xs = case P.parse file xs of
+parse file _ xs = case P.parse file xs of
   Left err -> fatal' . Err EParser Nothing Nothing . Just . show $ err
   Right decl -> return decl
 

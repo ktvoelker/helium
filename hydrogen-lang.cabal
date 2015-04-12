@@ -1,6 +1,6 @@
 
 name:           hydrogen-lang
-version:        0.1.0.0
+version:        0.2.0.0
 cabal-version:  >= 1.10
 build-type:     Simple
 license:        GPL-3
@@ -36,13 +36,13 @@ Library
   exposed-modules:
     He.Error
     He.Lexer
+    He.Monad
     He.Parser
     He.RefGraph
     He.Scope
   other-modules:
     He.Lexer.Tokens
     He.Lexer.Types
-    He.Monad
     He.Monad.State
     He.Monad.Types
   default-extensions:

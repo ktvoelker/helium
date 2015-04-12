@@ -19,7 +19,6 @@ module He.Lexer
 
 import Control.Lens
 import qualified Data.List as L
-import qualified Data.Map as M
 import qualified Data.Set as S
 import H.Prelude
 import Filesystem.Path.CurrentOS hiding (empty, null)
@@ -44,13 +43,8 @@ underscore = S.singleton '_'
 
 tokenize
   :: (IdClass a)
-  => LexerSpec a -> M.Map FilePath Text -> MT (M.Map FilePath (Tokens a))
-tokenize = (sequence .) . (M.mapWithKey . tokenizeFile)
-
-tokenizeFile
-  :: (IdClass a)
    => LexerSpec a -> FilePath -> Text -> MT (Tokens a)
-tokenizeFile spec name xs = runStateT (file spec) i >>= \case
+tokenize spec name xs = runStateT (file spec) i >>= \case
   (xs, ts)
     | not . null $ ts ^. tsInput
       -> fatal' . Err ELexer Nothing Nothing . Just . show $ (ts ^. tsSourcePos, xs)
