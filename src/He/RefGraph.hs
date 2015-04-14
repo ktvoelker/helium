@@ -37,7 +37,7 @@ emptyRefGraph :: (Ord a) => RefGraph a
 emptyRefGraph = RefGraph M.empty
 
 mapLens :: (Ord k) => k -> Lens' (Map k a) (Maybe a)
-mapLens = todo
+mapLens key = lens (M.lookup key) (\map val -> M.alter (const val) key map)
 
 nodeLens :: (Ord a) => a -> Lens' (RefGraph a) (Maybe (Set a))
 nodeLens node = rgMap . mapLens node
