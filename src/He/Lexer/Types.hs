@@ -105,6 +105,8 @@ type RawToken a = (TokenType a, TokenData)
 
 class (Eq a, Ord a, Enum a, Bounded a, Show a) => IdClass a where
 
+instance IdClass ()
+
 data LexerSpec a =
   LexerSpec
   { sKeywords    :: [Text]
