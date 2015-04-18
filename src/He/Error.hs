@@ -8,7 +8,8 @@ module He.Error
   , check
   , checked
   , fatal
-  , logError
+  , logExceptT
+  , logExceptT'
   , log
   ) where
 
@@ -31,10 +32,12 @@ vSepBy sep above below = above $+$ sep $+$ below
 instance Pretty Error where
   pPrint (Error es) = case D.toList es of
     [] -> text "No errors"
-    es -> foldl (vSepBy space) empty $ map (uncurry prettyError) es
+    es -> foldl (vSepBy empty) empty $ map (uncurry prettyError) es
 
 prettyError :: Maybe SourcePos -> Doc -> Doc
-prettyError sp message = maybe empty prettySourcePos sp $+$ message
+prettyError sp message = case sp of
+  Nothing -> message
+  Just sp -> prettySourcePos sp $+$ message
 
 prettySourcePos :: SourcePos -> Doc
 prettySourcePos sp =
@@ -62,10 +65,13 @@ fatal e = do
   report e
   get >>= maybe (impossible "fatal") ((put Nothing >>) . throwError)
 
-logError :: (MonadIO m, Pretty e) => ExceptT e m a -> (a -> m ()) -> m ()
-logError e f =
+logExceptT :: (MonadIO m, Pretty e) => ExceptT e m a -> (a -> m ()) -> m ()
+logExceptT e f =
   runExceptT e
   >>= either (liftIO . hPutStr stderr . render . pPrint) f
+
+logExceptT' :: (MonadIO m, Pretty e) => ExceptT e m () -> m ()
+logExceptT' e = logExceptT e return
 
 log :: (MonadIO m) => Text -> m ()
 log = liftIO . hPutStrLn stderr . unpack
