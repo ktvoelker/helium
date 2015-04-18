@@ -47,9 +47,9 @@ tokenize
 tokenize spec name xs = case runState (file spec) i of
   (xs, ts)
     | not . null $ ts ^. tsInput
-      -> throwError . err (Just $ ts ^. tsSourcePos) $ "Lexical error: " <> show xs
+      -> throwError $ err (Just $ ts ^. tsSourcePos) "Unexpected input"
     | curMode (ts ^. tsModeStack) /= LMNormal
-      -> throwError . err' $ "Lexical error: unexpected end of input"
+      -> throwError $ err' "Unexpected end of input"
     | otherwise
       -> return xs
   where

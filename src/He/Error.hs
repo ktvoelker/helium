@@ -44,6 +44,7 @@ prettySourcePos sp =
   text "At " <> maybe empty (text . unpack) (sp ^. spName)
   <> text " line " <> text (show $ sp ^. spLine)
   <> text " column " <> text (show $ sp ^. spColumn)
+  <> text ":"
 
 err :: Maybe SourcePos -> Text -> Error
 err sp xs = Error $ D.singleton (sp, text $ unpack xs)

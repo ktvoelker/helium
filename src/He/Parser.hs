@@ -12,6 +12,17 @@ import He.Lexer (TokenType(..), TokenData(..), IdClass(), Tokens, tokenData)
 
 type Parser s a = P.Parser s (TokenType a) (WithSourcePos TokenData)
 
+parseErrorText :: ParseError -> Text
+parseErrorText ParseError{..} = ty <> rest
+  where
+    ty = case peType of
+      Nothing -> "Unknown error"
+      Just ty -> case ty of
+        EUnexpected -> "Unexpected token"
+        EEnd -> "Unexpected end of input"
+        ENotEnd -> "Expected end of input"
+    rest = maybe "" (": " <>) peMessage
+
 parse
   :: (MonadError Error m, Eq a)
   => Parser s a b
@@ -19,7 +30,7 @@ parse
   -> Tokens a
   -> m b
 parse file _ xs = case P.parse file xs of
-  Left err -> throwError . err' $ show err
+  Left pe -> throwError $ err (peSourcePos pe) (parseErrorText pe)
   Right decl -> return decl
 
 delimit :: (IdClass a) => Text -> Text -> Parser s a b -> Parser s a b
