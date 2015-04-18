@@ -1,5 +1,16 @@
 
-module He.Error where
+module He.Error
+  ( module Control.Monad.Except
+  , Error()
+  , err
+  , err'
+  , report
+  , check
+  , checked
+  , fatal
+  , logError
+  , log
+  ) where
 
 import Control.Lens
 import Control.Monad.Except
