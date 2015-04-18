@@ -45,25 +45,21 @@ Library
     He.Lexer.Tokens
     He.Lexer.Types
   default-extensions:
-    NoImplicitPrelude
+    -- Syntax
     TupleSections
     LambdaCase
     RecordWildCards
     NamedFieldPuns
-    LiberalTypeSynonyms
-    MultiParamTypeClasses
-    TypeSynonymInstances
-    FlexibleInstances
-    FlexibleContexts
-    StandaloneDeriving
-    RankNTypes
-    TypeFamilies
-    ScopedTypeVariables
-    ExplicitForAll
     ViewPatterns
+    -- Types
+    FlexibleContexts
     OverloadedStrings
-    DeriveDataTypeable
+    RankNTypes
+    -- Deriving
+    StandaloneDeriving
     GeneralizedNewtypeDeriving
+    -- Other
+    NoImplicitPrelude
   other-extensions:
     TemplateHaskell
 
