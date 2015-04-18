@@ -10,8 +10,6 @@ import Prelude (Show(..))
 import Text.Parsec.Applicative.Types
 import Text.Regex.Applicative
 
-import He.Monad
-
 type Parser = RE Char
 
 choice :: [Parser a] -> Parser a
@@ -170,5 +168,5 @@ emptyTokenizerState name =
 
 makeLenses ''TokenizerState
 
-type TokT = StateT TokenizerState MT
+type TokT = State TokenizerState
 

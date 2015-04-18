@@ -7,19 +7,19 @@ import H.Prelude
 import Text.Parsec.Applicative hiding (Parser, parse)
 import qualified Text.Parsec.Applicative as P
 
+import He.Error
 import He.Lexer (TokenType(..), TokenData(..), IdClass(), Tokens, tokenData)
-import He.Monad
 
 type Parser s a = P.Parser s (TokenType a) (WithSourcePos TokenData)
 
 parse
-  :: (Eq a)
+  :: (MonadError Error m, Eq a)
   => Parser s a b
   -> FilePath
   -> Tokens a
-  -> MT b
+  -> m b
 parse file _ xs = case P.parse file xs of
-  Left err -> fatal' . Err EParser Nothing Nothing . Just . show $ err
+  Left err -> throwError . err' $ show err
   Right decl -> return decl
 
 delimit :: (IdClass a) => Text -> Text -> Parser s a b -> Parser s a b

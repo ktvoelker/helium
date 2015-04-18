@@ -5,17 +5,17 @@ import qualified Data.List as L
 import qualified Data.Map as M
 import H.Prelude
 
-import He.Monad
+import He.Error
 
 type ScopeT k v = ReaderT (Map k v)
 
 runScopeT :: (Ord k) => ScopeT k v m a -> m a
 runScopeT = flip runReaderT M.empty
 
-findInScope :: (MonadM m, MonadReader (Map k v) m, Ord k, Show k) => k -> m v
+findInScope :: (MonadError Error m, MonadReader (Map k v) m, Ord k, Show k) => k -> m v
 findInScope name = join . (liftM $ maybe err return) . findInScopeMaybe $ name
   where
-    err = fatal' $ Err ENotFound Nothing (Just $ show name) Nothing
+    err = throwError . err' $ "Not found: " <> show name
 
 findInScopeMaybe :: (MonadReader (Map k v) m, Ord k) => k -> m (Maybe v)
 findInScopeMaybe = ($ ask) . liftM . M.lookup

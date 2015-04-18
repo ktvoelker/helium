@@ -25,9 +25,9 @@ import Filesystem.Path.CurrentOS hiding (empty, null)
 import Text.Parsec.Applicative hiding (Parser)
 import Text.Regex.Applicative
 
+import He.Error
 import He.Lexer.Tokens
 import He.Lexer.Types
-import He.Monad
 
 lowerAlphas, upperAlphas, alphas, digits, underscore :: Set Char
 
@@ -42,14 +42,14 @@ digits = S.fromList ['0' .. '9']
 underscore = S.singleton '_'
 
 tokenize
-  :: (IdClass a)
-   => LexerSpec a -> FilePath -> Text -> MT (Tokens a)
-tokenize spec name xs = runStateT (file spec) i >>= \case
+  :: (MonadError Error m, IdClass a)
+   => LexerSpec a -> FilePath -> Text -> m (Tokens a)
+tokenize spec name xs = case runState (file spec) i of
   (xs, ts)
     | not . null $ ts ^. tsInput
-      -> fatal' . Err ELexer Nothing Nothing . Just . show $ (ts ^. tsSourcePos, xs)
+      -> throwError . err (Just $ ts ^. tsSourcePos) $ "Lexical error: " <> show xs
     | curMode (ts ^. tsModeStack) /= LMNormal
-      -> fatal' . Err ELexer Nothing Nothing . Just . show $ (ts ^. tsModeStack, xs)
+      -> throwError . err' $ "Lexical error: unexpected end of input"
     | otherwise
       -> return xs
   where
