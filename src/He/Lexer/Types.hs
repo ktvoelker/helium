@@ -7,6 +7,7 @@ import qualified Data.List as L
 import H.Prelude
 import qualified Data.Text as T
 import Prelude (Show(..))
+import Text.Parsec.Applicative.BNF (ShowBNF(..))
 import Text.Parsec.Applicative.Types
 import Text.Regex.Applicative
 
@@ -68,10 +69,13 @@ data TokenType a =
   | EndComment
   deriving (Eq, Ord)
 
-instance (Show a) => Show (TokenType a) where
-  showsPrec p = \case
+instance (ShowBNF a) => Show (TokenType a) where
+  showsPrec = const showsBNF
+
+instance (ShowBNF a) => ShowBNF (TokenType a) where
+  showsBNF = \case
     Keyword xs     -> ("'" <>) . (T.unpack xs <>) . ("'" <>)
-    Identifier a   -> ("ID[" <>) . showsPrec p a . ("]" <>)
+    Identifier a   -> ("ID[" <>) . showsBNF a . ("]" <>)
     LitChar        -> ("CHAR" <>)
     LitInt         -> ("INT" <>)
     LitFloat       -> ("FLOAT" <>)
