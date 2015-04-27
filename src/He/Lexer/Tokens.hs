@@ -7,7 +7,6 @@ module He.Lexer.Tokens
   , beginLineComment, endLineComment, lineCommentContent
   ) where
 
-import qualified Data.Set as S
 import qualified Data.Text as T
 import Text.Regex.Applicative
 
@@ -31,14 +30,19 @@ keywords =
 ident :: (IdClass a) => TokenParser a
 ident = keepMode . choice . fmap oneIdent . sIdentifiers
 
-oneIdent :: (IdClass a) => (a, Set Char, Set Char) -> Parser (RawToken a)
-oneIdent (cls, head, tail) =
-  ((Identifier cls,) .)
-  . (TextData .)
-  . (T.pack .)
-  . (:) <$> ool head <*> many (ool tail)
+oneIdent :: (IdClass a) => (a, IdSpec) -> Parser (RawToken a)
+oneIdent (cls, IdSpec{..}) = (Identifier cls,) . TextData . T.pack <$> re
   where
-    ool = oneOf . S.toList
+    singleRE =
+      (:)
+      <$> oneOf idStartChars
+      <*> many (oneOf $ idContinueChars <> idStartChars)
+    re = case idCompound of
+      Nothing -> singleRE
+      Just (onlyCompound, sepChar) -> (concat .) . (:) <$> singleRE <*> m suffix
+        where
+          suffix = (:) <$> char sepChar <*> singleRE
+          m = if onlyCompound then many1 else many
 
 sign :: (Num b) => LexerSpec a -> Parser (b -> b)
 sign = maybe (pure id) (option id . (*> pure negate) . text) . sNegative

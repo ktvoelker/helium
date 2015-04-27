@@ -109,10 +109,17 @@ class (Eq a, Ord a, Enum a, Bounded a, Show a) => IdClass a where
 
 instance IdClass ()
 
+data IdSpec =
+  IdSpec
+  { idStartChars    :: [Char]
+  , idContinueChars :: [Char]
+  , idCompound      :: Maybe (Bool, Char)
+  } deriving (Eq, Ord, Show)
+
 data LexerSpec a =
   LexerSpec
   { sKeywords    :: [Text]
-  , sIdentifiers :: [(a, Set Char, Set Char)]
+  , sIdentifiers :: [(a, IdSpec)]
   , sStrings     :: StringSpec
   , sInts        :: Bool
   , sNegative    :: Maybe Text

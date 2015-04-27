@@ -11,6 +11,7 @@ module He.Lexer
   , TokenData(..)
   , IdClass
   , LexerSpec(..)
+  , IdSpec(..)
   , StringSpec(..)
   , CommentSpec(..)
   , Tokens
@@ -19,7 +20,6 @@ module He.Lexer
 
 import Control.Lens
 import qualified Data.List as L
-import qualified Data.Set as S
 import H.Prelude
 import Filesystem.Path.CurrentOS hiding (empty, null)
 import Text.Parsec.Applicative hiding (Parser)
@@ -29,17 +29,17 @@ import He.Error
 import He.Lexer.Tokens
 import He.Lexer.Types
 
-lowerAlphas, upperAlphas, alphas, digits, underscore :: Set Char
+lowerAlphas, upperAlphas, alphas, digits, underscore :: [Char]
 
-lowerAlphas = S.fromList ['a' .. 'z']
+lowerAlphas = ['a' .. 'z']
 
-upperAlphas = S.fromList ['A' .. 'Z']
+upperAlphas = ['A' .. 'Z']
 
 alphas = lowerAlphas <> upperAlphas
 
-digits = S.fromList ['0' .. '9']
+digits = ['0' .. '9']
 
-underscore = S.singleton '_'
+underscore = ['_']
 
 tokenize
   :: (MonadError Error m, IdClass a)
