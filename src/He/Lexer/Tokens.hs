@@ -182,7 +182,7 @@ lineCommentContent =
   const
   . keepMode
   . fmap ((CommentContent,) . TextData . T.pack)
-  . many
+  . many1
   . noneOf $ ['\n']
 
 endLineComment :: TokenParser a
