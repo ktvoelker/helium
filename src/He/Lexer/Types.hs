@@ -149,7 +149,6 @@ data LexerMode =
   | LMInterp
   | LMInterpExtraDelim
   | LMBlockComment
-  | LMLineComment
   deriving (Eq, Ord, Enum, Bounded, Show)
 
 curMode :: [LexerMode] -> LexerMode

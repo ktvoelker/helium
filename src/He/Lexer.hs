@@ -106,7 +106,7 @@ normalToks =
   , ident
   , beginString
   , beginBlockComment
-  , beginLineComment
+  , lineComment
   ]
 
 tok :: (IdClass a) => LexerMode -> TokenParser a
@@ -115,7 +115,6 @@ tok LMString = alts [endString, beginInterp, stringContent]
 tok LMInterp = alts [endInterp, beginExtraDelim, normalToks]
 tok LMInterpExtraDelim = alts [endExtraDelim, normalToks]
 tok LMBlockComment = alts [beginBlockComment, endBlockComment, blockCommentContent]
-tok LMLineComment = alts [endLineComment, lineCommentContent]
 
 skippable :: LexerMode -> Parser ()
 skippable LMNormal = spaces
@@ -123,5 +122,4 @@ skippable LMString = pure ()
 skippable LMInterp = spaces
 skippable LMInterpExtraDelim = spaces
 skippable LMBlockComment = pure ()
-skippable LMLineComment = pure ()
 

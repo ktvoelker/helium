@@ -2,7 +2,7 @@
 TODO
 ====
 
-Fix line comment parsing
+Make line comments emit BeginComment and EndComment tokens
 
 Fix block comment parsing
 

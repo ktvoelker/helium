@@ -4,7 +4,7 @@ module He.Lexer.Tokens
   , beginString, endString, stringContent
   , beginInterp, endInterp, beginExtraDelim, endExtraDelim
   , beginBlockComment, endBlockComment, blockCommentContent
-  , beginLineComment, endLineComment, lineCommentContent
+  , lineComment
   ) where
 
 import qualified Data.Text as T
@@ -172,19 +172,9 @@ blockCommentContent = sComments >>> sBlockComment >>> \case
     . fmap ((CommentContent,) . TextData . T.pack)
     $ (:) <$> anyChar <*> few anyChar
 
-beginLineComment :: TokenParser a
-beginLineComment = sComments >>> sLineComment >>> \case
+lineComment :: TokenParser a
+lineComment = sComments >>> sLineComment >>> \case
   Nothing -> empty
-  Just sigil -> text sigil *> pure ((BeginComment, NoData), [Push LMLineComment])
-
-lineCommentContent :: TokenParser a
-lineCommentContent =
-  const
-  . keepMode
-  . fmap ((CommentContent,) . TextData . T.pack)
-  . many1
-  . noneOf $ ['\n']
-
-endLineComment :: TokenParser a
-endLineComment = const $ char '\n' *> pure ((EndComment, NoData), [Pop LMLineComment])
-
+  Just sigil -> keepMode . fmap f $ text sigil *> many (noneOf ['\n'])
+  where
+    f = (CommentContent,) . TextData . T.pack
