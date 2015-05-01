@@ -2,5 +2,23 @@
 TODO
 ====
 
+Fix line comment parsing
+
+Fix block comment parsing
+
+  Empty block comments don't work right
+
+  Nested block comments must have a character between the opening of the outer and
+  inner comments
+
+  The reason for all of this is that the blockCommentContent parser can't be allowed
+  to match nothing, because then we match it forever and make no progress
+
+    We need to construct a fairly complex regex to match the content properly.
+    Instead of using anyChar, it will use "anyChar but the first char of the
+    block comment opening phrase, or the first char of that phrase not followed
+    by the second char of that phrase, or the first two chars not followed by
+    the third" and so on.
+
 Rename everything into Text.Junco and Data.Junco
 
