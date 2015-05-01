@@ -186,7 +186,5 @@ lineCommentContent =
   . noneOf $ ['\n']
 
 endLineComment :: TokenParser a
-endLineComment = sComments >>> sLineComment >>> \case
-  Nothing -> empty
-  Just _ -> char '\n' *> pure ((EndComment, NoData), [Pop LMLineComment])
+endLineComment = const $ char '\n' *> pure ((EndComment, NoData), [Pop LMLineComment])
 
