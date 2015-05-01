@@ -118,6 +118,10 @@ tok LMBlockComment = alts [beginBlockComment, endBlockComment, blockCommentConte
 tok LMLineComment = alts [endLineComment, lineCommentContent]
 
 skippable :: LexerMode -> Parser ()
+skippable LMNormal = spaces
 skippable LMString = pure ()
-skippable _ = spaces
+skippable LMInterp = spaces
+skippable LMInterpExtraDelim = spaces
+skippable LMBlockComment = pure ()
+skippable LMLineComment = pure ()
 
