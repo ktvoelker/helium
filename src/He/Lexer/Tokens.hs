@@ -169,8 +169,8 @@ blockCommentContent = sComments >>> sBlockComment >>> \case
   Nothing -> empty
   Just _ ->
     keepMode
-    . fmap ((CommentContent,) . TextData . T.pack . concat)
-    $ few ((: []) <$> anyChar)
+    . fmap ((CommentContent,) . TextData . T.pack)
+    $ (:) <$> anyChar <*> few anyChar
 
 beginLineComment :: TokenParser a
 beginLineComment = sComments >>> sLineComment >>> \case
