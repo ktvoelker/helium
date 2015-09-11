@@ -30,11 +30,11 @@ Library
     text               >= 1.2 && < 1.3,
     mtl                >= 2.2 && < 2.3,
     pretty             >= 1.1 && < 1.2,
-    lens               >= 4.9 && < 4.10,
+    lens               >= 4.9 && < 4.13,
     system-filepath    >= 0.4 && < 0.5,
     regex-applicative  >= 0.3 && < 0.4,
     applicative-parsec >= 0.1 && < 0.2,
-    hydrogen           >= 0.3 && < 0.4
+    hydrogen           >= 0.4 && < 0.5
   exposed-modules:
     He.Error
     He.Lexer

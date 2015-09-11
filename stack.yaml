@@ -1,0 +1,11 @@
+flags: {}
+packages:
+- '.'
+- location:
+    git: https://github.com/ktvoelker/hydrogen.git
+    commit: f0c9eef4c73758aecd89c4133f43c70a6f748cbb
+- location:
+    git: https://github.com/ktvoelker/AParsec.git
+    commit: 8aa2601ae9bbbbd0d6585c18d10b043406ccda3d
+extra-deps: []
+resolver: lts-3.4
